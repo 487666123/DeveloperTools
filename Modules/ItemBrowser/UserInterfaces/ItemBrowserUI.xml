@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Body Class="DeveloperTools.Modules.ItemBrowser.UserInterfaces.ItemBrowserUI"
+	  Enabled="true" EnableBlur="true" Gap="0"
+	  Left="50#" Top="50#" Width="650px" FitHeight="true"
+	  Border="0" BorderColor="#00000000" BackgroundColor="#00000000">
+	<ElementGroup Name="MainPanel">
+		<DraggableView Name="DraggableView" BackgroundColor="#rgba(0,0,0,0.25)" Gap="8"
+					   CrossAlignment="Center" CrossContentAlignment="Stretch" Width="100%" Height="40px">
+			<TextView Text="物品浏览器" />
+		</DraggableView>
+		<HR BackgroundColor="rgba(0,0,0,0.75)"/>
+		<ElementGroup Name="ContentContainer" FlexDirection="Row" Width="100%" Height="385px">
+			
+		</ElementGroup>
+	</ElementGroup>
+</Body>

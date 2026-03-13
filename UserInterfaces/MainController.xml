@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Body Class="DeveloperTools.UserInterfaces.MainController"
+	  Enabled="true" Border="0" BorderColor="#00000000" BackgroundColor="#00000000">
+	<ElementGroup Name="MainPanel">
+
+	</ElementGroup>
+</Body>

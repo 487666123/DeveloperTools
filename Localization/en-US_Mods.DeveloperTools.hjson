@@ -1,0 +1,36 @@
+ItemCategories: {
+	All: {
+		DisplayName: 全部
+		Description: 所有物品
+	}
+
+	Potions: {
+		DisplayName: 药水
+		Description: 恢复药水，魔力药水，增益药水
+	}
+
+	Weapon: {
+		DisplayName: 武器
+		Description: 带有伤害的物品
+	}
+
+	MeleeWeapon: {
+		DisplayName: 近战武器
+		Description: 近战伤害武器，无速度加成近战武器，鞭子
+	}
+
+	RangeWeapon: {
+		DisplayName: 远程武器
+		Description: 远程伤害武器
+	}
+
+	Equip: {
+		DisplayName: 装备
+		Description: 装备，饰品
+	}
+
+	Ammo: {
+		DisplayName: 弹药
+		Description: 弹药
+	}
+}
