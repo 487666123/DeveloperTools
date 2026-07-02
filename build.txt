@@ -1,4 +1,4 @@
-displayName = Developer Tools
+displayName = 开发者工具
 author = 太阳照常升起
 version = 0.1
 modReferences = SilkyUIFramework

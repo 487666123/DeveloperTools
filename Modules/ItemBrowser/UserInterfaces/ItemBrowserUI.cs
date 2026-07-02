@@ -1,83 +1,75 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DeveloperTools.Modules.ItemBrowser.UserInterfaces.Components;
 using Microsoft.Xna.Framework;
-using SilkyUIFramework.Layout;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace DeveloperTools.Modules.ItemBrowser.UserInterfaces;
 
 [RegisterUI("Vanilla: Radial Hotbars", "Builder: ItemBrowserUI")]
 public partial class ItemBrowserUI : BaseBody
 {
-    public SUIScrollView ItemCategoryList { get; private set; }
-    public SUIScrollView ItemTable { get; private set; }
+    public override bool ContainsPoint(Vector2 point)
+    {
+        if (LeftPanel.ContainsPoint(point)) return true;
+
+        return base.ContainsPoint(point);
+    }
+
+    public override IEnumerable<UIView> BlurElements => [MainPanel, LeftPanel];
 
     protected override void OnInitialize()
     {
         InitializeComponent();
 
-        // 初始化样式
-        MainPanel.BorderRadius = new Vector4(8f);
-        MainPanel.BorderColor = SUIColor.Border * 0.75f;
-        MainPanel.BackgroundColor = SUIColor.Background * 0.5f;
+        Header.ControlTarget = this;
+        Header.Title.Text = "物品浏览器";
+        Header.CloseButton.LeftMouseDown += (_, _) => Enabled = false;
 
-        // 物品分类列表
-        ItemCategoryList = new SUIScrollView
-        {
-            Gap = new Size(4f),
-            Padding = new Margin(4f),
-            Mask = {
-                BorderRadius = new Vector4(4f),
-                Border = 2f,
-                BorderColor = Color.Black * 0.75f,
-                BackgroundColor = SUIColor.Background * 0.25f,
-            },
-            Container =
-            {
-                Gap = Size.Zero,
-                FlexWrap = false,
-                FitHeight =true,
-                FitWidth = false,
-                FlexDirection = FlexDirection.Column,
-                MainAlignment = MainAlignment.Start,
-                CrossAlignment = CrossAlignment.Start,
-            },
-        }.Join(ContentContainer);
-        ItemCategoryList.SetHeight(0f, 1f);
-        ItemCategoryList.SetWidth(180f);
+        // 初始化样式
+        MainPanel.BorderColor = SUIColor.Border * 1f;
+        MainPanel.BackgroundColor = SUIColor.Background * 0.75f;
+
+        LeftTitle.UseDeathText();
+
+        LeftPanel.BorderColor = SUIColor.Border * 1f;
+        LeftPanel.BackgroundColor = SUIColor.Background * 0.75f;
 
         // ItemBrowser 简称 ib
         // 从 system 获取分类列表
         var ibSystem = ItemBrowserSystem.Instance;
-        var itemCategories = ibSystem.ItemCategories.Values.ToArray();
 
-        for (int i = 0; i < itemCategories.Length; i++)
+        foreach (var (_, itemCategory) in ibSystem.ItemCategories)
         {
-            var itemCategory = itemCategories[i];
             if (itemCategory.Items.Count == 0) continue;
+            if (itemCategory is ItemCategoryFromMod) continue;
 
-            var textView = new UIIbCategory(itemCategory);
+            var textView = new ItemBrowserCategoryButton(itemCategory).Join(ItemCategoryList.Container);
+
             textView.LeftMouseDown += (_, _) => UpdateItemTable(itemCategory);
 
-            if (i != 0) SUIDividingLine.Horizontal(Color.Black * 0.75f).Join(ItemCategoryList.Container);
-
-            textView.Join(ItemCategoryList.Container);
+            SUIDividingLine.Horizontal(Color.Black * 0.5f).Join(ItemCategoryList.Container);
         }
 
-        SUIDividingLine.Vertical(Color.Black * 0.75f).Join(ContentContainer);
+        ItemCategoryList.Container.RemoveChild(ItemCategoryList.Container.Children[^1]);
 
-        ItemTable = new SUIScrollView
+        UpdateItemTable(ibSystem.ItemCategories["All"]);
+
+        new UICategoryGroup().Join(LeftScrollView.Container);
+        new UICategoryGroup()
         {
-            Gap = new Size(4f),
-            Padding = new Margin(4f),
-            FlexGrow = 1f,
-            Container =
-            {
-                FlexWrap = true,
-                MainAlignment = MainAlignment.Start,
-            },
-        }.Join(ContentContainer);
-        ItemTable.SetHeight(0f, 1f);
-
-        UpdateItemTable(itemCategories[0]);
+            Title = { Text = "装备类型筛选" }
+        }.Join(LeftScrollView.Container);
+        new UICategoryGroup()
+        {
+            Title = { Text = "功能类型筛选" }
+        }.Join(LeftScrollView.Container);
+        new UICategoryGroup()
+        {
+            Title = { Text = "其他类型筛选" }
+        }.Join(LeftScrollView.Container);
     }
 
     private void UpdateItemTable(ItemCategory itemCategory)
@@ -88,7 +80,33 @@ public partial class ItemBrowserUI : BaseBody
 
         for (int i = 0; i < items.Count; i++)
         {
-            new UIIbSlot(itemCategory, i).Join(ItemTable.Container);
+            new ItemBrowserSlot(itemCategory, i).Join(ItemTable.Container);
+        }
+    }
+
+    protected override void UpdateStatus(GameTime gameTime)
+    {
+        base.UpdateStatus(gameTime);
+
+        var pos = new Vector2(10, 200);
+        var pos2 = new Vector2(10, 300);
+        foreach (var mod in ModLoader.Mods)
+        {
+            if (!mod.HasAsset("icon")) continue;
+            if (mod.Assets.Request<Texture2D>("icon")?.Value is not { } t2d) continue;
+
+            Main.spriteBatch.Draw(t2d, pos, Color.White);
+            pos += new Vector2(100, 0);
+            pos2 += new Vector2(100, 0);
+
+            if (mod.HasAsset("icon_small"))
+            {
+                Main.spriteBatch.Draw(mod.Assets.Request<Texture2D>("icon_small").Value, pos2 - new Vector2(100, 0), Color.White);
+            }
+            else
+            {
+                Main.spriteBatch.Draw(ModAsset.default_small.Value, pos2 - new Vector2(100, 0), Color.White);
+            }
         }
     }
 }

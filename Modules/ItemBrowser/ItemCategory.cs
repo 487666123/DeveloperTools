@@ -6,6 +6,23 @@ using Terraria.ModLoader;
 
 namespace DeveloperTools.Modules.ItemBrowser;
 
+public class ItemCategoryGroup
+{
+    public IReadOnlyList<ItemCategory> Categories => _categories;
+    private readonly List<ItemCategory> _categories = [];
+
+    public event EventHandler<ItemCategory> OnGroupChanged;
+
+    /// <summary>
+    /// 能加不能减
+    /// </summary>
+    public void AddItemCategory(ItemCategory category)
+    {
+        _categories.Add(category);
+        OnGroupChanged?.Invoke(this, category);
+    }
+}
+
 /// <summary>
 /// 物品浏览器的分类<br/>
 /// 对开发者自定义物品分类提供支持<br/>
@@ -55,36 +72,60 @@ public class ItemCategory : IEquatable<ItemCategory>
     /// 过滤器
     /// </summary>
     /// <returns>true 代表物品可以出现在这个分类</returns>
-    public virtual bool Filters(Item item) => true;
+    protected virtual bool Matches(Item item) => true;
 
-    public void UpdateItems(ReadOnlySpan<Item> items)
+    private bool _built;
+    public void BuildCache(ReadOnlySpan<Item> items)
     {
+        if (_built) return; _built = true;
+
         for (int i = 0; i < items.Length; i++)
         {
             var item = items[i];
-            if (!Filters(item)) continue;
+            if (!Matches(item)) continue;
             Items.Add(item);
         }
     }
 
-    public bool Equals(ItemCategory other) => Name.Equals(other.Name);
+    string MergeName => $"{Mod.Name}.{Name}";
+
+    public bool Equals(ItemCategory other) => MergeName.Equals(other.MergeName);
 
     public override bool Equals(object obj) => obj is ItemCategory other && Equals(other);
 
-    public override int GetHashCode() => Name.GetHashCode();
+    public override int GetHashCode() => MergeName.GetHashCode();
 }
 
-public class ModItemCategory(Mod mod, Mod targetMod, string name) : ItemCategory(mod, name)
+/// <summary>
+/// 一个模组对应一个实例
+/// </summary>
+internal class ItemCategoryFromMod : ItemCategory
 {
-    public Mod TargetMod { get; } = targetMod;
+    public Mod TargetMod { get; }
     public override string DisplayName => TargetMod.DisplayName;
     public override string Description => $"{TargetMod.DisplayName}";
 
-    public override bool Filters(Item item) => item.ModItem?.Mod == TargetMod;
+    public ItemCategoryFromMod(Mod mod, Mod targetMod, string name) : base(mod, name)
+    {
+        ArgumentNullException.ThrowIfNull(targetMod);
+        TargetMod = targetMod;
+    }
+
+    protected override bool Matches(Item item) => item.ModItem?.Mod == TargetMod;
 }
 
-public class SimpleItemCategory(Mod mod, string name, Func<Item, bool> filter) : ItemCategory(mod, name)
+/// <summary>
+/// 通过 <see cref="Func{T, TResult}"/> 创建实例
+/// </summary>
+public class SimpleItemCategory : ItemCategory
 {
-    public Func<Item, bool> Filter = filter;
-    public sealed override bool Filters(Item item) => Filter?.Invoke(item) ?? false;
+    private readonly Func<Item, bool> _matches;
+
+    public SimpleItemCategory(Mod mod, string name, Func<Item, bool> matches) : base(mod, name)
+    {
+        ArgumentNullException.ThrowIfNull(matches);
+        _matches = matches;
+    }
+
+    protected sealed override bool Matches(Item item) => _matches.Invoke(item);
 }

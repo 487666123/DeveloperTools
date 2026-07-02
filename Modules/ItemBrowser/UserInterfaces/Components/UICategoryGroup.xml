@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Body Class="DeveloperTools.Modules.ItemBrowser.UserInterfaces.Components.UICategoryGroup"
+	  FlexDirection="Column" Width="-0.5px 100%" FitHeight="true"
+	  Border="2" BorderRadius="4" BorderColor="rgba(0,0,0,0.75)" BackgroundColor="rgba(0,0,0,0.25)">
+	<Style.CrossCenter CrossAlignment="Center" CrossContentAlignment="Center" />
+	<Style.CrossStretch CrossAlignment="Stretch" CrossContentAlignment="Stretch" />
+	<ElementGroup Style="CrossCenter" Width="100%" Height="30px" FlexDriection="Row"
+				  BackgroundColor="rgba(0,0,0,0.25)" Padding="8 4" Gap="4">
+		<TextView Name="Title" Text="伤害类型筛选" TextScale="0.8" FlexGrow="1" />
+		<Image />
+	</ElementGroup>
+	<HR BackgroundColor="rgba(0,0,0,0.5)" />
+	<ElementGroup Name="ContentContainer" Style="CrossStretch" Width="100%" FitHeight="true" FlexDirection="Column"
+				  Padding="4" Gap="4">
+	</ElementGroup>
+</Body>

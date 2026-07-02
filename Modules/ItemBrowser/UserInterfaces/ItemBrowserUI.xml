@@ -1,16 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Body Class="DeveloperTools.Modules.ItemBrowser.UserInterfaces.ItemBrowserUI"
-	  Enabled="true" EnableBlur="true" Gap="0"
-	  Left="50#" Top="50#" Width="650px" FitHeight="true"
+	  Enabled="true" EnableBlur="true" Gap="0" Padding="0"
+	  Left="50#" Top="50#" FitWidth="true" FitHeight="true"
 	  Border="0" BorderColor="#00000000" BackgroundColor="#00000000">
-	<ElementGroup Name="MainPanel">
-		<DraggableView Name="DraggableView" BackgroundColor="#rgba(0,0,0,0.25)" Gap="8"
-					   CrossAlignment="Center" CrossContentAlignment="Stretch" Width="100%" Height="40px">
-			<TextView Text="物品浏览器" />
-		</DraggableView>
+	<Style.CrossCenter CrossAlignment="Center" CrossContentAlignment="Center" />
+	<Style.Stretch CrossAlignment="Stretch" CrossContentAlignment="Stretch" />
+	<ElementGroup Name="MainPanel" Style="Stretch" FlexDirection="Column" FitWidth="true" FitHeight="true"
+				  Border="2" BorderRadius="8">
+		<Header Name="Header"/>
 		<HR BackgroundColor="rgba(0,0,0,0.75)"/>
-		<ElementGroup Name="ContentContainer" FlexDirection="Row" Width="100%" Height="385px">
-			
+		<ElementGroup Name="ContentContainer" FlexDirection="Row" FitWidth="true" Height="385px">
+			<ScrollView Name="ItemCategoryList" FitWidth="true" Height="100%" Gap="4" Padding="4">
+				<M.Mask FitWidth="true" BorderRadius="4" Border ="2" BorderColor = "rgba(0,0,0,0.75)" BackgroundColor="rgba(0,0,0,0.25)"/>
+				<M.Container FlexDirection="Column" MainAlignment="Start" CrossAlignment="Start"
+							 Gap="0" FlexWrap="false" FitHeight="true" Width="150px" />
+			</ScrollView>
+			<VR BackgroundColor="rgba(0,0,0,0.75)"/>
+			<ScrollView Name="ItemTable" FitWidth="true" Height="100%" Gap="4" Padding="4">
+				<M.Mask FitWidth="true" />
+				<M.Container MainAlignment="Start" Width="412px" FlexWrap="true" Gap="4" />
+			</ScrollView>
 		</ElementGroup>
+	</ElementGroup>
+	<ElementGroup Name="LeftPanel" Positioning="Absolute" Left="-6px -100% 100#" FlexDirection="Column"
+				  Width="200px" Height="100%"
+				  Border="2" BorderRadius="8" BorderColor="#000000">
+		<ElementGroup Style="CrossCenter" Width="100%" Height="40px" Padding="8 0" BackgroundColor="rgba(0,0,0,0.25)">
+			<TextView Name="LeftTitle" Text="通用分类" TextScale="0.45" />
+		</ElementGroup>
+		<HR BackgroundColor="rgba(0,0,0,0.75)" />
+		<ScrollView Name="LeftScrollView"  FlexDirection="Row" Width="100%" Height="100%"
+					FlexShrink="1" Gap="4" Padding="4">
+			<M.Mask Width="100%" Height="100%" />
+			<M.Container Width="100%" FitHeight="true" FlexDirection="Column" Gap="4" />
+		</ScrollView>
 	</ElementGroup>
 </Body>
